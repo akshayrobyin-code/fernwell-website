@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fernwell – Houseplants & pots</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Instrument+Sans:wght@400;600&display=swap">
+<style>
+:root{--bg:#eef3ee;--surface:#fff;--ink:#14281f;--muted:#57695f;--line:#d3ddd5;--accent:#1f5e3f;--accent-ink:#fff;--pop:#e4572e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1b15;--surface:#172720;--ink:#e8f1ea;--muted:#9bb0a3;--line:#2a3e34;--accent:#6fd09b;--accent-ink:#0f1b15;--pop:#ff7a52}}
+:root[data-theme="dark"]{--bg:#0f1b15;--surface:#172720;--ink:#e8f1ea;--muted:#9bb0a3;--line:#2a3e34;--accent:#6fd09b;--accent-ink:#0f1b15;--pop:#ff7a52}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 "Instrument Sans",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;margin:0;line-height:1.1}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--pop);outline-offset:2px}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;justify-content:space-between;align-items:center;padding:14px 5vw;background:var(--bg);border-bottom:1px solid var(--line)}
+.logo{font:700 24px "Bricolage Grotesque",sans-serif}
+.cartbtn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:9px 18px;font-weight:600}
+.hero{padding:7vw 5vw 3vw;max-width:1100px;margin:auto}
+.hero h1{font-size:clamp(40px,8vw,88px);max-width:12ch;letter-spacing:-.03em}
+.hero p{max-width:46ch;color:var(--muted);font-size:18px;margin:16px 0 0}
+.filters{display:flex;gap:8px;flex-wrap:wrap;padding:20px 5vw;max-width:1100px;margin:auto}
+.chip{border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:7px 16px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px;padding:0 5vw 60px;max-width:1100px;margin:auto}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.card svg{width:100%;height:190px;display:block}
+.card .body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card h3{font-size:20px}
+.card small{color:var(--muted)}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:10px}
+.price{font-weight:600;font-size:18px}
+.add{background:var(--accent);color:var(--accent-ink);border:0;border-radius:8px;padding:8px 14px;font-weight:600}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:9}
+.overlay.on{opacity:1;pointer-events:auto}
+aside{position:fixed;top:0;right:0;bottom:0;width:min(400px,100%);background:var(--surface);z-index:10;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top,0px)) 20px calc(18px + env(safe-area-inset-bottom,0px))}
+aside.on{transform:none}
+.ahead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.x{background:none;border:0;color:var(--ink);font-size:28px;line-height:1}
+#items{flex:1;overflow:auto}
+.item{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.qty{display:flex;align-items:center;gap:8px;margin-top:4px}
+.qty button{width:28px;height:28px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink)}
+.empty{color:var(--muted);padding:20px 0}
+.total{display:flex;justify-content:space-between;font-size:20px;font-weight:600;padding:14px 0}
+.checkout{width:100%;background:var(--pop);color:#fff;border:0;border-radius:10px;padding:14px;font-weight:600;font-size:17px}
+.checkout:disabled{opacity:.4;cursor:not-allowed}
+.done{text-align:center;padding:30px 0}
+footer{padding:30px 5vw;text-align:center;color:var(--muted);border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Fernwell</div>
+  <button class="cartbtn" id="open" aria-label="Open cart">Cart (<span id="count">0</span>)</button>
+</header>
+
+<section class="hero">
+  <h1>Plants that live well indoors.</h1>
+  <p>Hardy houseplants and handmade pots, shipped in two days with care instructions in the box.</p>
+</section>
+
+<div class="filters" id="filters" role="group" aria-label="Filter products"></div>
+<main class="grid" id="grid"></main>
+<footer>© 2026 Fernwell. Free shipping on orders over ₹1,500.</footer>
+
+<div class="overlay" id="overlay"></div>
+<aside id="cart" aria-label="Shopping cart" aria-hidden="true">
+  <div class="ahead"><h2>Your cart</h2><button class="x" id="close" aria-label="Close cart">×</button></div>
+  <div id="items"></div>
+  <div class="total"><span>Total</span><span id="total">₹0</span></div>
+  <button class="checkout" id="checkout">Place order</button>
+</aside>
+
+<script>
+const products=[
+{id:1,name:"Monstera",cat:"Plants",price:1299,pot:"#c96b4b",leaf:"#2e7d4f",note:"Bright, indirect light"},
+{id:2,name:"Snake plant",cat:"Plants",price:699,pot:"#8a9a8f",leaf:"#3d6b4a",note:"Survives low light"},
+{id:3,name:"Money plant",cat:"Plants",price:349,pot:"#d9a441",leaf:"#4a9a5c",note:"Water weekly"},
+{id:4,name:"Peace lily",cat:"Plants",price:849,pot:"#5b6f8a",leaf:"#2a6b50",note:"Flowers in shade"},
+{id:5,name:"Speckled planter",cat:"Pots",price:599,pot:"#e8e2d4",leaf:"",note:"Glazed ceramic, 6 in"},
+{id:6,name:"Terracotta duo",cat:"Pots",price:449,pot:"#c96b4b",leaf:"",note:"Set of 2, with saucers"},
+{id:7,name:"Plant mist spray",cat:"Care",price:249,pot:"#7fb3c8",leaf:"",note:"500 ml brass bottle"},
+{id:8,name:"Organic potting mix",cat:"Care",price:299,pot:"#6b4f3a",leaf:"",note:"5 kg, peat-free"}
+];
+const fmt=n=>"₹"+n.toLocaleString("en-IN");
+let cart={},filter="All";
+try{cart=JSON.parse(localStorage.getItem("fw-cart")||"{}")||{}}catch(e){cart={}}
+const $=id=>document.getElementById(id);
+
+function art(p){
+  let g="";
+  if(p.leaf){g=[[-32,-22,-28],[0,-34,0],[32,-22,28]].map(([x,y,r])=>`<ellipse cx="${100+x}" cy="${100+y}" rx="16" ry="38" fill="${p.leaf}" transform="rotate(${r} ${100+x} ${100+y+20})"/>`).join("")}
+  else if(p.cat==="Care"){g=`<rect x="88" y="40" width="24" height="26" rx="4" fill="${p.pot}" opacity=".6"/>`}
+  const body=p.cat==="Care"?`<rect x="74" y="64" width="52" height="86" rx="10" fill="${p.pot}"/>`:`<path d="M66 118h68l-8 42H74z" fill="${p.pot}"/><rect x="62" y="110" width="76" height="12" rx="4" fill="${p.pot}"/>`;
+  return `<svg viewBox="0 0 200 190" role="img" aria-label="${p.name}"><rect width="200" height="190" fill="var(--bg)"/>${g}${body}</svg>`;
+}
+function renderFilters(){
+  $("filters").innerHTML=["All","Plants","Pots","Care"].map(c=>`<button class="chip" aria-pressed="${c===filter}" data-c="${c}">${c}</button>`).join("");
+}
+function renderGrid(){
+  $("grid").innerHTML=products.filter(p=>filter==="All"||p.cat===filter).map(p=>`
+  <article class="card">${art(p)}<div class="body"><h3>${p.name}</h3><small>${p.note}</small>
+  <div class="row"><span class="price">${fmt(p.price)}</span><button class="add" data-id="${p.id}">Add to cart</button></div></div></article>`).join("");
+}
+function save(){try{localStorage.setItem("fw-cart",JSON.stringify(cart))}catch(e){}}
+function renderCart(){
+  const ids=Object.keys(cart).filter(k=>cart[k]>0);
+  let total=0,count=0;
+  $("items").innerHTML=ids.length?ids.map(id=>{const p=products.find(x=>x.id==id),q=cart[id];total+=p.price*q;count+=q;
+    return `<div class="item"><strong>${p.name}</strong><span>${fmt(p.price*q)}</span>
+    <div class="qty"><button data-d="-1" data-id="${id}" aria-label="Remove one ${p.name}">−</button><span>${q}</span><button data-d="1" data-id="${id}" aria-label="Add one ${p.name}">+</button></div></div>`}).join(""):`<p class="empty">Your cart is empty. Add a plant to get started.</p>`;
+  $("total").textContent=fmt(total);
+  $("count").textContent=count;
+  $("checkout").disabled=!ids.length;
+}
+function toggle(on){$("cart").classList.toggle("on",on);$("overlay").classList.toggle("on",on);$("cart").setAttribute("aria-hidden",!on)}
+
+$("filters").onclick=e=>{const c=e.target.dataset.c;if(c){filter=c;renderFilters();renderGrid()}};
+$("grid").onclick=e=>{const id=e.target.dataset.id;if(id){cart[id]=(cart[id]||0)+1;save();renderCart();toggle(true)}};
+$("items").onclick=e=>{const id=e.target.dataset.id,d=+e.target.dataset.d;if(id&&d){cart[id]=Math.max(0,cart[id]+d);if(!cart[id])delete cart[id];save();renderCart()}};
+$("open").onclick=()=>toggle(true);
+$("close").onclick=$("overlay").onclick=()=>toggle(false);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")toggle(false)});
+$("checkout").onclick=()=>{
+  const n="FW-"+Math.floor(10000+Math.random()*90000);
+  cart={};save();renderCart();
+  $("items").innerHTML=`<div class="done"><h2>Order placed</h2><p>Your order number is ${n}. This is a demo, so no payment was taken.</p></div>`;
+  $("checkout").disabled=true;
+};
+renderFilters();renderGrid();renderCart();
+</script>
+</body>
+</html>
